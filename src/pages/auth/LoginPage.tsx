@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { LockIcon, Mail } from "lucide-react";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 
-type LoginRole = "patient" | "doctor";
+type LoginRole = "patient" | "doctor" | 'admin';
 
 interface LoginForm {
   email: string;
@@ -114,7 +114,7 @@ export default function LoginPage() {
 
         <div className="ui-card p-6 sm:p-8">
           <div className="mb-6 flex rounded-control border border-border bg-surface-muted p-1">
-            {(["patient", "doctor"] as LoginRole[]).map((r) => (
+            {(["patient", "doctor", "admin"] as LoginRole[]).map((r) => (
               <button
                 key={r}
                 type="button"
