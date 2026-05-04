@@ -3,12 +3,14 @@ import { login, register, logout } from "../apis/auth.api";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { useNavigate } from "react-router-dom";
+import type  { IUser } from "../types/user";
+
 
 export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: () => {
-      // Success message handled in component
+      
     },
     onError: (error) => {
       const err = getErrorMessage(error);
@@ -50,14 +52,13 @@ export const useLogout = () => {
   });
 };
 
-import { IUser } from "../types/user";
 
 export const useUser = (): IUser | null => {
   const userStr = localStorage.getItem("user");
   if (!userStr) return null;
   try {
     return JSON.parse(userStr) as IUser;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
