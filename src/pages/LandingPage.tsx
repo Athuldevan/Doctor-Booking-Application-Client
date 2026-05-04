@@ -67,14 +67,14 @@ const features = [
 ];
 
 const specialties = [
-  { name: "Cardiology", icon: "🫀" },
-  { name: "Dermatology", icon: "🧴" },
-  { name: "Neurology", icon: "🧠" },
-  { name: "Orthopedics", icon: "🦴" },
-  { name: "Pediatrics", icon: "👶" },
-  { name: "Dentistry", icon: "🦷" },
-  { name: "Ophthalmology", icon: "👁️" },
-  { name: "General Medicine", icon: "💊" },
+  { name: "Cardiology" },
+  { name: "Dermatology" },
+  { name: "Neurology" },
+  { name: "Orthopedics" },
+  { name: "Pediatrics" },
+  { name: "Dentistry" },
+  { name: "Ophthalmology" },
+  { name: "General Medicine" },
 ];
 
 const testimonials = [
@@ -86,11 +86,11 @@ const testimonials = [
     text: "MedBook made finding a specialist so easy. I booked my appointment in under 2 minutes and the doctor was amazing!",
   },
   {
-    name: "Dr. Michael Chen",
-    role: "Cardiologist",
+    name: "Michael Chen",
+    role: "Patient",
     avatar: "MC",
     rating: 5,
-    text: "As a doctor, this platform has streamlined my practice. Managing appointments has never been this efficient.",
+    text: "The reminder system is a lifesaver. I never miss an appointment now, and the check-in process at the clinic was seamless.",
   },
   {
     name: "Emily Rodriguez",
@@ -258,13 +258,6 @@ export default function LandingPage() {
                   Book Appointment
                   <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </button>
-                <button
-                  onClick={() => navigate("/login")}
-                  className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-8 py-4 text-base font-semibold text-gray-300 transition-all hover:border-white/20 hover:bg-white/10"
-                >
-                  <Stethoscope className="h-5 w-5" />
-                  I'm a Doctor
-                </button>
               </div>
 
               <div className="flex items-center gap-6 pt-4">
@@ -375,7 +368,9 @@ export default function LandingPage() {
                 key={spec.name}
                 className="group rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center transition-all duration-300 hover:border-blue-500/30 hover:bg-white/[0.04]"
               >
-                <span className="mb-3 block text-4xl">{spec.icon}</span>
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <Stethoscope className="h-6 w-6" />
+                </div>
                 <p className="text-sm font-semibold text-gray-300 transition-colors group-hover:text-blue-400">
                   {spec.name}
                 </p>
@@ -544,28 +539,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
-                For Doctors
-              </h4>
-              <ul className="space-y-3">
-                {[
-                  "Join as Doctor",
-                  "Doctor Dashboard",
-                  "Manage Schedule",
-                  "Patient Records",
-                ].map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm transition-colors hover:text-blue-400"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+
 
             <div>
               <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
