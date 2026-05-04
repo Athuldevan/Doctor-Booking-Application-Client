@@ -1,14 +1,15 @@
-// pages/admin/doctors/AddDoctorPage.tsx
-import { useNavigate } from "react-router-dom";
+// components/Doctors/EditDoctor.tsx
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, User, Mail, Phone, Lock } from "lucide-react";
+import { ArrowLeft, Loader2, User, Mail, Phone } from "lucide-react";
 
 import {
   doctorSchema,
   type DoctorFormData,
 } from "../../validations/doctor.validation";
-import { useCreateDoctor } from "../../hooks/useDoctor";
+import { useGetDoctor, useUpdateDoctor } from "../../hooks/useDoctor";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import RenderField from "../custom/Form";
 import { toast } from "react-toastify";
@@ -24,41 +25,58 @@ const specializations = [
   { value: "general", label: "General Medicine" },
 ];
 
-export default function AddDoctorPage() {
+export default function EditDoctorPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  // useGetDoctor now returns the doctor object directly (via select)
+  const { data: doc, isLoading: isFetching } = useGetDoctor(id!);
+  const { mutate, isPending, error } = useUpdateDoctor();
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<DoctorFormData>({
     resolver: zodResolver(doctorSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      specialization: "",
-      experience: 1,
-      consultationFee:  0 ,
-      bio: "",
-    },
   });
 
-  const { mutate, isPending, error } = useCreateDoctor();
+  useEffect(() => {
+    if (doc) {
+      reset({
+        name: doc.user?.name || "",
+        email: doc.user?.email || "",
+        phone: doc.user?.phone || "",
+        password: "placeholder", // Not editable here
+        specialization: doc.specialization || "",
+        experience: Number(doc.experience) || 0,
+        consultationFee: Number(doc.consultationFee) || 0,
+        bio: doc.bio || "",
+      });
+    }
+  }, [doc, reset]);
 
   const onSubmit = (data: DoctorFormData) => {
-    mutate(data, {
+    const { password, ...updateData } = data;
+    mutate({ _id: id!, ...updateData }, {
       onSuccess: () => {
-        toast.success("Doctor added successfully!");
+        toast.success("Doctor profile updated!");
         navigate("/admin/doctors");
       },
     });
   };
 
+  if (isFetching) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate("/admin/doctors")}
@@ -67,12 +85,11 @@ export default function AddDoctorPage() {
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Add Doctor</h1>
-          <p className="text-sm text-muted">Add a new doctor to the platform</p>
+          <h1 className="text-2xl font-bold text-foreground">Edit Doctor</h1>
+          <p className="text-sm text-muted">Update doctor profile details</p>
         </div>
       </div>
 
-      {/* Form */}
       <div className="ui-card p-6 sm:p-8">
         {error && (
           <div className="mb-6 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3 text-sm text-danger">
@@ -81,7 +98,6 @@ export default function AddDoctorPage() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Account Info */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
               Account Information
@@ -106,6 +122,7 @@ export default function AddDoctorPage() {
                 errors={errors}
                 placeholder="doctor@example.com"
                 icon={<Mail className="h-4 w-4 text-muted" />}
+                disabled
               />
               <RenderField
                 name="phone"
@@ -117,21 +134,10 @@ export default function AddDoctorPage() {
                 icon={<Phone className="h-4 w-4 text-muted" />}
               />
             </div>
-
-            <RenderField
-              name="password"
-              label="Password"
-              type="password"
-              control={control}
-              errors={errors}
-              placeholder="Min 6 characters"
-              icon={<Lock className="h-4 w-4 text-muted" />}
-            />
           </div>
 
           <hr className="border-border" />
 
-          {/* Professional Info */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
               Professional Information
@@ -153,7 +159,6 @@ export default function AddDoctorPage() {
                 type="number"
                 control={control}
                 errors={errors}
-                placeholder="10"
               />
               <RenderField
                 name="consultationFee"
@@ -161,7 +166,6 @@ export default function AddDoctorPage() {
                 type="number"
                 control={control}
                 errors={errors}
-                placeholder="100"
               />
             </div>
 
@@ -172,15 +176,9 @@ export default function AddDoctorPage() {
               rows={4}
               control={control}
               errors={errors}
-              placeholder="Brief description about the doctor..."
             />
           </div>
 
-          <hr className="border-border" />
-
-          
-
-          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -197,10 +195,10 @@ export default function AddDoctorPage() {
               {isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Creating…
+                  Saving...
                 </>
               ) : (
-                "Add Doctor"
+                "Save Changes"
               )}
             </button>
           </div>

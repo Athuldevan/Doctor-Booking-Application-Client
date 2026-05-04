@@ -63,7 +63,6 @@ export default function DoctorsPage() {
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Experience</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Fee</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Rating</th>
                 <th className="px-6 py-4 text-right text-xs font-semibold uppercase text-muted">Actions</th>
               </tr>
             </thead>
@@ -74,6 +73,7 @@ export default function DoctorsPage() {
                   doctor={doc}
                   onEdit={(id) => navigate(`/admin/doctors/${id}/edit`)}
                   onDelete={(id) => setDeleteId(id)}
+                  onManageSlots={(id) => navigate("/admin/appointments/create", { state: { doctorId: id } })}
                 />
               ))}
             </tbody>

@@ -5,11 +5,12 @@ import { useForm } from "react-hook-form";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLogin } from "../../hooks/useAuth";
 import RenderField from "../../components/custom/Form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LockIcon, Mail } from "lucide-react";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { toast } from "react-toastify";
 
-type LoginRole = "patient" | "doctor" | 'admin';
+type LoginRole = "patient" | 'admin';
 
 interface LoginForm {
   email: string;
@@ -33,8 +34,19 @@ export default function LoginPage() {
 
   const { mutate, isPending, error } = useLogin();
 
+  const navigate = useNavigate();
+
   const onSubmit = (data: LoginForm) => {
-    mutate({ ...data, role });
+    mutate(
+      { ...data, role },
+      {
+        onSuccess: (res: any) => {
+          toast.success(`Welcome back, ${res.data?.name || "User"}!`);
+          if (role === "admin") navigate("/admin");
+          else navigate("/patient/doctors");
+        },
+      }
+    );
   };
 
   return (
@@ -114,7 +126,7 @@ export default function LoginPage() {
 
         <div className="ui-card p-6 sm:p-8">
           <div className="mb-6 flex rounded-control border border-border bg-surface-muted p-1">
-            {(["patient", "doctor", "admin"] as LoginRole[]).map((r) => (
+            {(["patient", "admin"] as LoginRole[]).map((r) => (
               <button
                 key={r}
                 type="button"
@@ -159,11 +171,7 @@ export default function LoginPage() {
               type="email"
               control={control}
               errors={errors}
-              placeholder={
-                role === "doctor"
-                  ? "doctor@hospital.com"
-                  : "patient@example.com"
-              }
+              placeholder ='Enter your email'
               icon={<Mail />}
             />
 
@@ -206,7 +214,7 @@ export default function LoginPage() {
                   Signing in…
                 </span>
               ) : (
-                `Sign in as ${role === "doctor" ? "Doctor" : "Patient"}`
+                `Sign in as ${role === "admin" ? "Admin" : "Patient"}`
               )}
             </button>
           </form>

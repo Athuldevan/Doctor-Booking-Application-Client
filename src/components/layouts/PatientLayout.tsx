@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
   Stethoscope,
   Calendar,
-  Users,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -13,23 +10,18 @@ import {
 
 const sidebarLinks = [
   {
-    label: "Dashboard",
-    path: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Doctors",
-    path: "/admin/doctors",
+    label: "Find Doctors",
+    path: "/patient/doctors",
     icon: Stethoscope,
   },
   {
-    label: "Appointments",
-    path: "/admin/appointments",
+    label: "My Appointments",
+    path: "/patient/appointments",
     icon: Calendar,
   },
 ];
 
-export default function AdminLayout() {
+export default function PatientLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -39,6 +31,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex h-screen bg-background">
+      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -46,10 +39,10 @@ export default function AdminLayout() {
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-surface transition-transform lg:static lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-border bg-surface transition-transform lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-6">
           <div className="flex items-center gap-2">
@@ -57,7 +50,7 @@ export default function AdminLayout() {
               <Stethoscope className="h-5 w-5 text-primary" />
             </div>
             <span className="text-lg font-bold text-foreground">
-              Med<span className="text-primary">Book</span>
+              Medi<span className="text-primary">Care</span>
             </span>
           </div>
           <button
@@ -68,26 +61,27 @@ export default function AdminLayout() {
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-          {sidebarLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              end={link.path === "/admin"}
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                  isActive
+        <div className="flex-1 overflow-y-auto py-4">
+          <nav className="space-y-1 px-3">
+            {sidebarLinks.map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted hover:bg-surface-muted hover:text-foreground"
-                }`
-              }
-            >
-              <link.icon className="h-5 w-5" />
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
+                  }`
+                }
+              >
+                <link.icon className="h-5 w-5" />
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+
+        </div>
 
         <div className="border-t border-border p-3">
           <button
@@ -100,7 +94,9 @@ export default function AdminLayout() {
         </div>
       </aside>
 
+      {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Header */}
         <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-4 lg:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -112,17 +108,16 @@ export default function AdminLayout() {
           <div className="ml-auto flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                A
+                P
               </div>
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-foreground">Administrator</p>
-                <p className="text-[10px] uppercase font-bold text-primary tracking-wider">System Access</p>
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-foreground">Patient</p>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto bg-background p-4 lg:p-6">
           <Outlet />
         </main>
       </div>

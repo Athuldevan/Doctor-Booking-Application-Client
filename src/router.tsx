@@ -8,6 +8,14 @@ import DoctorsPage from "./pages/doctor";
 import AddDoctorPage from "./components/Doctors/AddDoctor";
 import AppointmentsPage from "./pages/admin/AppointmentsPage";
 import CreateSlotPage from "./components/admin/createSlot";
+import PatientDoctorsPage from "./pages/patient/DoctorsPage";
+import PatientBookSlotPage from "./pages/patient/BookSlotPage";
+import PatientLayout from "./components/layouts/PatientLayout";
+
+import EditDoctorPage from "./components/Doctors/EditDoctor";
+import EditSlotPage from "./components/admin/editSlot";
+
+import PatientAppointmentsPage from "./pages/patient/AppointmentsPage";
 
 export function AppRoutes() {
   return (
@@ -22,7 +30,15 @@ export function AppRoutes() {
         <Route path="appointments" element={<AppointmentsPage />} />
         <Route path="doctors/add" element={<AddDoctorPage />} />
         <Route path="appointments/create" element={<CreateSlotPage />} />
-        <Route path="doctors/:id/edit" element={<p>EDit Doctor</p>} />
+        <Route path="appointments/:id/edit" element={<EditSlotPage />} />
+        <Route path="doctors/:id/edit" element={<EditDoctorPage />} />
+      </Route>
+
+      <Route path="/patient" element={<PatientLayout />}>
+        <Route index element={<PatientDoctorsPage />} />
+        <Route path="doctors" element={<PatientDoctorsPage />} />
+        <Route path="doctors/:doctorId/book" element={<PatientBookSlotPage />} />
+        <Route path="appointments" element={<PatientAppointmentsPage />} />
       </Route>
     </Routes>
   );

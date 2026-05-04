@@ -21,11 +21,12 @@ export const useGetDoctors = () => {
   });
 };
 
-export const useGetDoctor = (query: Partial<IDoctor>) => {
+export const useGetDoctor = (id: string) => {
   return useQuery({
-    queryKey: ["doctors", query],
-    queryFn: () => getDoctor(query),
-    enabled: !!query._id,
+    queryKey: ["doctors", id],
+    queryFn: () => getDoctor(id),
+    enabled: !!id,
+    select: (data) => data?.data ?? data,
   });
 };
 

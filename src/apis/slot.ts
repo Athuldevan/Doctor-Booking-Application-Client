@@ -7,6 +7,7 @@ export const createSlot = async (data: {
   startTime: string;
   endTime: string;
   slotDuration: number;
+  timeSlots: { startTime: string; endTime: string; status: string }[];
 }) => {
   const res = await axiosClient.post("/slots", data);
   return res.data;
@@ -63,5 +64,10 @@ export const cancelSlot = async (data: {
 
 export const deleteSlot = async (doctorSlotId: string) => {
   const res = await axiosClient.delete(`/slots/${doctorSlotId}`);
+  return res.data;
+};
+
+export const getPatientAppointments = async () => {
+  const res = await axiosClient.get("/slots/patient/history");
   return res.data;
 };

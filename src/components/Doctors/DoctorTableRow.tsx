@@ -5,19 +5,22 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  Star,
+  Calendar,
+  Clock,
 } from "lucide-react";
 
 interface DoctorTableRowProps {
   doctor: any;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onManageSlots?: (id: string) => void;
 }
 
 export default function DoctorTableRow({
   doctor,
   onEdit,
   onDelete,
+  onManageSlots,
 }: DoctorTableRowProps) {
   return (
     <tr className="hover:bg-secondary/30">
@@ -25,13 +28,13 @@ export default function DoctorTableRow({
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary">
-            {doctor.userId?.name?.charAt(0) || "D"}
+            {(doctor.user?.name || doctor.userId?.name)?.charAt(0) || "D"}
           </div>
           <div>
             <p className="font-medium text-foreground">
-              Dr. {doctor.userId?.name}
+              Dr. {doctor.user?.name || doctor.userId?.name}
             </p>
-            <p className="text-xs text-muted">{doctor.userId?.email}</p>
+            <p className="text-xs text-muted">{doctor.user?.email || doctor.userId?.email}</p>
           </div>
         </div>
       </td>
@@ -58,19 +61,20 @@ export default function DoctorTableRow({
         <StatusBadge verified={doctor.isVerified} />
       </td>
 
-      {/* Rating */}
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-1">
-          <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-          <span className="text-sm font-medium text-foreground">
-            {doctor.rating || 0}
-          </span>
-        </div>
-      </td>
+
 
       {/* Actions */}
       <td className="px-6 py-4">
         <div className="flex items-center justify-end gap-2">
+          {onManageSlots && (
+            <button
+              onClick={() => onManageSlots(doctor._id)}
+              className="rounded-lg p-2 text-muted hover:bg-success/10 hover:text-success"
+              title="Manage Slots"
+            >
+              <Calendar className="h-4 w-4" />
+            </button>
+          )}
           {onEdit && (
             <button
               onClick={() => onEdit(doctor._id)}

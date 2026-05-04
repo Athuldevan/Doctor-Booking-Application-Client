@@ -6,8 +6,8 @@ export const getDoctors = async () => {
   return res.data;
 };
 
-export const getDoctor = async (query: Partial<IDoctor>) => {
-  const res = await axiosClient.get(`/doctors`, { params: query });
+export const getDoctor = async (id: string) => {
+  const res = await axiosClient.get(`/doctors/${id}`);
   return res.data;
 };
 
@@ -17,8 +17,8 @@ export const createDoctor = async (data: Partial<IDoctor>) => {
   return res.data;
 };
 
-export const updateDoctor = async (query: Partial<IDoctor>) => {
-  const res = await axiosClient.put("/doctors/", { params: query });
+export const updateDoctor = async ({ _id, ...data }: Partial<IDoctor>) => {
+  const res = await axiosClient.put(`/doctors/${_id}`, data);
   return res.data;
 };
 

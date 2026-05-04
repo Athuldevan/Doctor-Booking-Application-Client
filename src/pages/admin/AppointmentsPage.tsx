@@ -1,285 +1,362 @@
-// pages/admin/appointments/index.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Plus,
+  Search,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
   Calendar,
   Clock,
-  Loader2,
+  User,
+  Stethoscope,
+  Phone,
+  Mail,
   ChevronDown,
-  Trash2,
+  Filter,
+  CheckCircle,
+  XCircle,
+  Plus,
 } from "lucide-react";
-import PageHeader from "../../components/custom/PageHeader";
-import EmptyState from "../../components/custom/EmptyState";
-import DeleteModal from "../../components/custom/DeleteModel";
-import {
-  useDeleteSlot,
-  useGetAllSlots,
-  useUpdateSlotStatus,
-} from "../../hooks/useSlot";
+import { useAdminAppointments } from "../../hooks/useAdmin";
+import { useUpdateSlotStatus } from "../../hooks/useSlot";
+import type { AdminAppointment } from "../../apis/admin.api";
 import { getErrorMessage } from "../../utils/getErrorMessage";
-import type { ISlot, ITimeSlot } from "../doctor/types/ISlot";
+import EmptyState from "../../components/custom/EmptyState";
+import PageHeader from "../../components/custom/PageHeader";
+
+const ALL_STATUSES = ["pending", "confirmed", "cancelled", "completed"];
 
 const statusColors: Record<string, string> = {
-  available: "bg-success/10 text-success",
+  available: "bg-secondary/50 text-muted",
   pending: "bg-warning/10 text-warning",
-  confirmed: "bg-primary/10 text-primary",
+  confirmed: "bg-success/10 text-success",
   cancelled: "bg-danger/10 text-danger",
-  completed: "bg-muted/10 text-muted",
+  completed: "bg-primary/10 text-primary",
   blocked: "bg-secondary text-muted",
 };
 
-const statusOptions = [
-  "available",
-  "pending",
-  "confirmed",
-  "cancelled",
-  "completed",
-  "blocked",
-];
+const statusDot: Record<string, string> = {
+  pending: "bg-warning",
+  confirmed: "bg-success",
+  cancelled: "bg-danger",
+  completed: "bg-primary",
+};
 
-export default function AppointmentsPage() {
+export default function AdminAppointmentsPage() {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useGetAllSlots();
-  const updateStatus = useUpdateSlotStatus();
-  const deleteMutation = useDeleteSlot();
-
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const slots: ISlot[] = data?.data || data || [];
+  const { data, isLoading, error } = useAdminAppointments({
+    status: statusFilter || undefined,
+    page,
+    limit: 15,
+  });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+  const updateStatus = useUpdateSlotStatus();
+
+  const appointments: AdminAppointment[] = data?.appointments ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  // Client-side search by patient/doctor name
+  const filtered = search
+    ? appointments.filter(
+        (a) =>
+          a.patientName?.toLowerCase().includes(search.toLowerCase()) ||
+          a.doctorName?.toLowerCase().includes(search.toLowerCase()),
+      )
+    : appointments;
+
+  const handleStatusChange = (apt: AdminAppointment, newStatus: string) => {
+    updateStatus.mutate(
+      {
+        doctorSlotId: apt.doctorSlotId,
+        timeSlotId: String(apt.timeSlotId),
+        status: newStatus,
+      },
+      { onSuccess: () => setOpenDropdown(null) },
     );
-  }
+  };
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Appointments"
-        description="Manage doctor slots and bookings"
-        action={
-          <button
-            onClick={() => navigate("/admin/appointments/create")}
-            className="btn-primary gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Create Slots
-          </button>
-        }
-      />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader
+          title="Appointments"
+          description="View and manage all patient appointments"
+        />
+        <button
+          onClick={() => navigate("/admin/appointments/create")}
+          className="btn-primary gap-2 h-11 px-6 rounded-xl shadow-lg shadow-primary/20"
+        >
+          <Plus className="h-4 w-4" />
+          Create Slots
+        </button>
+      </div>
 
+      {/* ── Filters ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap gap-3">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <input
+            type="text"
+            placeholder="Search patient or doctor..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="ui-input pl-9 h-10 w-full"
+          />
+        </div>
+
+        {/* Status filter pills */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="flex items-center gap-1.5 text-xs text-muted font-medium">
+            <Filter className="h-3.5 w-3.5" /> Filter:
+          </span>
+          <button
+            onClick={() => { setStatusFilter(""); setPage(1); }}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
+              !statusFilter
+                ? "bg-primary text-white"
+                : "bg-secondary text-muted hover:bg-secondary/80"
+            }`}
+          >
+            All
+          </button>
+          {ALL_STATUSES.map((s) => (
+            <button
+              key={s}
+              onClick={() => { setStatusFilter(s); setPage(1); }}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
+                statusFilter === s
+                  ? "bg-primary text-white"
+                  : "bg-secondary text-muted hover:bg-secondary/80"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Error ────────────────────────────────────────────────────────── */}
       {error && (
         <div className="rounded-xl border border-danger/20 bg-danger/5 px-4 py-3 text-sm text-danger">
           {getErrorMessage(error)}
         </div>
       )}
 
-      {slots.length === 0 ? (
+      {/* ── Loading ──────────────────────────────────────────────────────── */}
+      {isLoading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : filtered.length === 0 ? (
         <EmptyState
           icon={<Calendar className="h-12 w-12" />}
-          title="No appointments yet"
-          description="Create slots for doctors to get started"
-          action={
-            <button
-              onClick={() => navigate("/admin/appointments/create")}
-              className="btn-primary gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create Slots
-            </button>
-          }
+          title="No appointments found"
+          description="Try a different filter or search term."
         />
       ) : (
-        <div className="space-y-6">
-          {slots.map((slot: ISlot) => (
-            <div key={slot._id} className="ui-card overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-border px-6 py-4">
-                <div className="flex items-center gap-3">
-                  {/* Avatar */}
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary">
-                    {slot.doctorId?.user?.name?.charAt(0) || "D"}
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Dr. {slot.doctorId?.user?.name || "Unknown"}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {slot.doctorId?.specialization}
-                    </p>
-                  </div>
-                </div>
+        <>
+          {/* ── Table ─────────────────────────────────────────────────── */}
+          <div className="ui-card overflow-hidden">
+            {/* Summary bar */}
+            <div className="border-b border-border bg-secondary/20 px-6 py-3 flex items-center justify-between">
+              <p className="text-xs text-muted">
+                Showing <span className="font-semibold text-foreground">{filtered.length}</span> of{" "}
+                <span className="font-semibold text-foreground">{data?.total ?? 0}</span> appointments
+              </p>
+              <p className="text-xs text-muted">
+                Page {page} of {totalPages}
+              </p>
+            </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-sm text-muted">
-                    <Calendar className="h-4 w-4" />
-                    {new Date(slot.date).toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-sm text-muted">
-                    <Clock className="h-4 w-4" />
-                    {slot.slotDuration} min
-                  </div>
-                  <button
-                    onClick={() => setDeleteId(slot._id)}
-                    className="rounded-lg p-2 text-muted hover:bg-danger/10 hover:text-danger"
+            {/* Header row */}
+            <div className="hidden border-b border-border bg-secondary/30 px-6 py-3 lg:grid lg:grid-cols-12 gap-4">
+              <p className="col-span-3 text-[11px] font-bold uppercase tracking-wider text-muted">Patient</p>
+              <p className="col-span-3 text-[11px] font-bold uppercase tracking-wider text-muted">Doctor</p>
+              <p className="col-span-2 text-[11px] font-bold uppercase tracking-wider text-muted">Date & Time</p>
+              <p className="col-span-2 text-[11px] font-bold uppercase tracking-wider text-muted">Fee</p>
+              <p className="col-span-2 text-[11px] font-bold uppercase tracking-wider text-muted">Status</p>
+            </div>
+
+            {/* Rows */}
+            <div className="divide-y divide-border">
+              {filtered.map((apt) => {
+                const dropId = `${apt.doctorSlotId}-${apt.timeSlotId}`;
+                return (
+                  <div
+                    key={dropId}
+                    className="grid grid-cols-1 gap-4 px-6 py-4 transition hover:bg-secondary/10 lg:grid-cols-12 lg:items-center"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+                    {/* Patient */}
+                    <div className="col-span-3 flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                        {apt.patientName ? apt.patientName.charAt(0).toUpperCase() : "?"}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {apt.patientName ?? <span className="italic text-muted">No patient</span>}
+                        </p>
+                        {apt.patientEmail && (
+                          <p className="flex items-center gap-1 truncate text-xs text-muted">
+                            <Mail className="h-3 w-3 shrink-0" />
+                            {apt.patientEmail}
+                          </p>
+                        )}
+                        {apt.patientPhone && (
+                          <p className="flex items-center gap-1 text-xs text-muted">
+                            <Phone className="h-3 w-3 shrink-0" />
+                            {apt.patientPhone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-              {/* Time Slots Grid */}
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                  {slot.timeSlots.map((ts: ITimeSlot) => (
-                    <div
-                      key={ts._id}
-                      className="relative rounded-xl border border-border p-3 transition hover:border-primary/30"
-                    >
-                      <p className="text-sm font-medium text-foreground">
-                        {ts.startTime} - {ts.endTime}
+                    {/* Doctor */}
+                    <div className="col-span-3 flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-success/10 text-sm font-bold text-success">
+                        <Stethoscope className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          Dr. {apt.doctorName}
+                        </p>
+                        <p className="truncate text-xs text-muted">{apt.specialization}</p>
+                      </div>
+                    </div>
+
+                    {/* Date & Time */}
+                    <div className="col-span-2">
+                      <p className="flex items-center gap-1.5 text-sm text-foreground">
+                        <Calendar className="h-3.5 w-3.5 text-muted" />
+                        {new Date(apt.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </p>
+                      <p className="flex items-center gap-1.5 text-xs text-muted">
+                        <Clock className="h-3 w-3" />
+                        {apt.startTime} – {apt.endTime}
+                      </p>
+                    </div>
 
-                      {ts.patient && (
-                        <p className="mt-1 truncate text-xs text-muted">
-                          👤 {ts.patient.name}
+                    {/* Fee */}
+                    <div className="col-span-2">
+                      <p className="text-sm font-bold text-foreground">
+                        ₹{apt.consultationFee.toLocaleString("en-IN")}
+                      </p>
+                      <p className="text-xs text-muted">Consultation</p>
+                      {apt.cancelReason && (
+                        <p className="mt-1 truncate text-xs text-danger" title={apt.cancelReason}>
+                          ⚠ {apt.cancelReason}
                         </p>
                       )}
+                    </div>
 
-                      {ts.reason && (
-                        <p className="mt-0.5 truncate text-xs text-muted">
-                          📝 {ts.reason}
-                        </p>
-                      )}
-
-                      {/* Status Dropdown */}
-                      <div className="mt-2">
+                    {/* Status & Actions */}
+                    <div className="col-span-2 flex items-center gap-3">
+                      <div className="relative">
                         <button
-                          onClick={() =>
-                            setOpenDropdown(
-                              openDropdown === ts._id ? null : (ts._id ?? null),
-                            )
-                          }
-                          className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium capitalize ${
-                            statusColors[ts.status]
+                          onClick={() => setOpenDropdown(openDropdown === dropId ? null : dropId)}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
+                            statusColors[apt.status]
                           }`}
                         >
-                          {ts.status}
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${statusDot[apt.status] ?? "bg-muted"}`}
+                          />
+                          {apt.status}
                           <ChevronDown className="h-3 w-3" />
                         </button>
 
-                        {openDropdown === ts._id && (
-                          <div className="absolute left-0 top-full z-10 mt-1 w-36 rounded-xl border border-border bg-surface py-1 shadow-lg">
-                            {statusOptions.map((opt) => (
+                        {openDropdown === dropId && (
+                          <div className="absolute left-0 top-full z-20 mt-1 w-40 rounded-xl border border-border bg-surface py-1 shadow-xl">
+                            {ALL_STATUSES.map((opt) => (
                               <button
                                 key={opt}
-                                onClick={() => {
-                                  updateStatus.mutate({
-                                    doctorSlotId: slot._id,
-                                    timeSlotId: ts._id!,
-                                    status: opt,
-                                  });
-                                  setOpenDropdown(null);
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs capitalize hover:bg-secondary ${
-                                  ts.status === opt
-                                    ? "font-semibold text-primary"
+                                onClick={() => handleStatusChange(apt, opt)}
+                                disabled={updateStatus.isPending}
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-left text-xs capitalize transition hover:bg-secondary ${
+                                  apt.status === opt
+                                    ? "font-bold text-primary"
                                     : "text-foreground"
                                 }`}
                               >
+                                <span
+                                  className={`h-1.5 w-1.5 rounded-full ${statusDot[opt] ?? "bg-muted"}`}
+                                />
                                 {opt}
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
+
+                      {/* Quick Actions for Pending */}
+                      {apt.status === "pending" && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleStatusChange(apt, "confirmed")}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 text-success transition hover:bg-success hover:text-white"
+                            title="Confirm Appointment"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleStatusChange(apt, "cancelled")}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-danger/10 text-danger transition hover:bg-danger hover:text-white"
+                            title="Cancel Appointment"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Summary */}
-              <div className="flex flex-wrap gap-4 border-t border-border bg-secondary/30 px-6 py-3">
-                <SlotCount
-                  label="Total"
-                  count={slot.timeSlots.length}
-                  color="text-foreground"
-                />
-                <SlotCount
-                  label="Available"
-                  count={
-                    slot.timeSlots.filter((t) => t.status === "available")
-                      .length
-                  }
-                  color="text-success"
-                />
-                <SlotCount
-                  label="Pending"
-                  count={
-                    slot.timeSlots.filter((t) => t.status === "pending").length
-                  }
-                  color="text-warning"
-                />
-                <SlotCount
-                  label="Confirmed"
-                  count={
-                    slot.timeSlots.filter((t) => t.status === "confirmed")
-                      .length
-                  }
-                  color="text-primary"
-                />
-                <SlotCount
-                  label="Cancelled"
-                  count={
-                    slot.timeSlots.filter((t) => t.status === "cancelled")
-                      .length
-                  }
-                  color="text-danger"
-                />
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* ── Pagination ────────────────────────────────────────────── */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition hover:bg-secondary disabled:opacity-40"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition ${
+                    p === page
+                      ? "bg-primary text-white"
+                      : "border border-border bg-surface text-muted hover:bg-secondary"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition hover:bg-secondary disabled:opacity-40"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </>
       )}
-
-      <DeleteModal
-        isOpen={!!deleteId}
-        title="Delete slots?"
-        message="All time slots and bookings will be removed."
-        isLoading={deleteMutation.isPending}
-        onClose={() => setDeleteId(null)}
-        onConfirm={() =>
-          deleteMutation.mutate(deleteId!, {
-            onSuccess: () => setDeleteId(null),
-          })
-        }
-      />
-    </div>
-  );
-}
-
-function SlotCount({
-  label,
-  count,
-  color,
-}: {
-  label: string;
-  count: number;
-  color: string;
-}) {
-  return (
-    <div className="flex items-center gap-1.5 text-xs">
-      <span className="text-muted">{label}:</span>
-      <span className={`font-semibold ${color}`}>{count}</span>
     </div>
   );
 }

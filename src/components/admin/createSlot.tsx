@@ -1,5 +1,5 @@
 // pages/admin/appointments/CreateSlotPage.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2, Clock, Timer, User } from "lucide-react";
@@ -9,6 +9,7 @@ import { slotSchema, type SlotFormData } from "../../validations/slot.validation
 import { useCreateSlot } from "../../hooks/useSlot";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import RenderField from "../custom/Form";
+import { toast } from "react-toastify";
 
 const durations = [
   { value: "15", label: "15 minutes" },
@@ -30,6 +31,9 @@ export default function CreateSlotPage() {
     label: `Dr. ${doc.user?.name} — ${doc.specialization}`,
   }));
 
+  const location = useLocation();
+  const preSelectedDoctorId = location.state?.doctorId || "";
+
   const {
     control,
     handleSubmit,
@@ -39,7 +43,7 @@ export default function CreateSlotPage() {
   } = useForm<SlotFormData>({
     resolver: zodResolver(slotSchema),
     defaultValues: {
-      doctorId: "",
+      doctorId: preSelectedDoctorId,
       date: "",
       startTime: "",
       endTime: "",
@@ -56,6 +60,12 @@ export default function CreateSlotPage() {
   const preview = generatePreview(startTime, endTime, Number(slotDuration));
 
   const onSubmit = (data: SlotFormData) => {
+    const timeSlots = preview.map((p) => ({
+      startTime: p.start,
+      endTime: p.end,
+      status: "available",
+    }));
+
     mutate(
       {
         doctorId: data.doctorId,
@@ -63,8 +73,14 @@ export default function CreateSlotPage() {
         startTime: data.startTime,
         endTime: data.endTime,
         slotDuration: Number(data.slotDuration),
+        timeSlots,
       },
-      { onSuccess: () => navigate("/admin/appointments") }
+      {
+        onSuccess: () => {
+          toast.success("Appointment slots created!");
+          navigate("/admin/appointments");
+        },
+      }
     );
   };
 

@@ -7,7 +7,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: () => {
-      toast.success("Successfully Registered");
+      // Success message handled in component
     },
     onError: (error) => {
       const err = getErrorMessage(error);
