@@ -157,7 +157,7 @@ export default function AddDoctorPage() {
               />
               <RenderField
                 name="consultationFee"
-                label="Consultation Fee ($)"
+                label="Consultation Fee (₹)"
                 type="number"
                 control={control}
                 errors={errors}
