@@ -86,6 +86,22 @@ export default function PatientLayout() {
 
         </div>
 
+        <div className="mt-auto border-t border-border p-4">
+          <div className="flex items-center gap-3 px-2 py-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary capitalize">
+              {user?.name?.charAt(0) || "P"}
+            </div>
+            <div className="overflow-hidden">
+              <p className="truncate text-sm font-bold text-foreground capitalize">
+                {user?.name || "Patient"}
+              </p>
+              <p className="truncate text-xs text-muted">
+                {user?.email || "patient@example.com"}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="border-t border-border p-3">
           <button
             onClick={handleLogout}

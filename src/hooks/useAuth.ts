@@ -50,11 +50,13 @@ export const useLogout = () => {
   });
 };
 
-export const useUser = () => {
+import { IUser } from "../types/user";
+
+export const useUser = (): IUser | null => {
   const userStr = localStorage.getItem("user");
   if (!userStr) return null;
   try {
-    return JSON.parse(userStr);
+    return JSON.parse(userStr) as IUser;
   } catch (error) {
     return null;
   }

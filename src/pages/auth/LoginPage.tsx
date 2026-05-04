@@ -10,7 +10,7 @@ import { LockIcon, Mail } from "lucide-react";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { toast } from "react-toastify";
 
-type LoginRole = "patient" | 'admin';
+type LoginRole = "patient" | "admin";
 
 interface LoginForm {
   email: string;
