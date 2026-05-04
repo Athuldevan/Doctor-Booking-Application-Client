@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// components/doctor/DoctorCard.tsx
 import { useNavigate } from "react-router-dom";
 import {
-  Star,
   MapPin,
   Clock,
   ChevronRight,

@@ -27,10 +27,11 @@ const sidebarLinks = [
   },
 ];
 
-import { useLogout } from "../../hooks/useAuth";
+import { useLogout, useUser } from "../../hooks/useAuth";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const user = useUser();
   const { mutate: logoutMutate } = useLogout();
 
   const handleLogout = () => {
@@ -111,11 +112,11 @@ export default function AdminLayout() {
 
           <div className="ml-auto flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                A
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary capitalize">
+                {user?.name?.charAt(0) || "A"}
               </div>
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-foreground">Administrator</p>
+                <p className="text-sm font-bold text-foreground">{user?.name || "Administrator"}</p>
                 <p className="text-[10px] uppercase font-bold text-primary tracking-wider">System Access</p>
               </div>
             </div>

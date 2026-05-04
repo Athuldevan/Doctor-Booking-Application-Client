@@ -21,10 +21,11 @@ const sidebarLinks = [
   },
 ];
 
-import { useLogout } from "../../hooks/useAuth";
+import { useLogout, useUser } from "../../hooks/useAuth";
 
 export default function PatientLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const user = useUser();
   const { mutate: logoutMutate } = useLogout();
 
   const handleLogout = () => {
@@ -109,11 +110,11 @@ export default function PatientLayout() {
 
           <div className="ml-auto flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                P
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary capitalize">
+                {user?.name?.charAt(0) || "P"}
               </div>
               <div className="hidden sm:block">
-                <p className="text-sm font-medium text-foreground">Patient</p>
+                <p className="text-sm font-medium text-foreground">{user?.name || "Patient"}</p>
               </div>
             </div>
           </div>

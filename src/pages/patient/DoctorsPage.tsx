@@ -4,7 +4,6 @@ import {
   Stethoscope, 
   Search, 
   Filter, 
-  ArrowRight,
   ChevronRight
 } from "lucide-react";
 import { useGetDoctors } from "../../hooks/useDoctor";

@@ -3,8 +3,6 @@
 import {
   Edit,
   Trash2,
-  CheckCircle,
-  XCircle,
   Calendar,
 
 } from "lucide-react";
