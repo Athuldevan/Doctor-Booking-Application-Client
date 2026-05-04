@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Loader2, 
-  ChevronRight, 
-  Clock, 
+import {
+  ArrowLeft,
+  Calendar,
+  Loader2,
+  ChevronRight,
+  Clock,
   Stethoscope,
   Info,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import { useGetSlotsByDoctor, useBookSlot } from "../../hooks/useSlot";
 import { useGetDoctor } from "../../hooks/useDoctor";
@@ -23,12 +23,17 @@ export default function PatientBookSlotPage() {
   const navigate = useNavigate();
 
   const [date, setDate] = useState<string>(""); // Empty means all
-  const { data: doctor, isLoading: isDoctorLoading } = useGetDoctor(doctorId || "");
-  const { data, isLoading, error } = useGetSlotsByDoctor(doctorId || "", date || undefined);
+  const { data: doctor, isLoading: isDoctorLoading } = useGetDoctor(
+    doctorId || "",
+  );
+  const { data, isLoading, error } = useGetSlotsByDoctor(
+    doctorId || "",
+    date || undefined,
+  );
   const bookSlotMutation = useBookSlot();
 
-  const [selectedSlot, setSelectedSlot] = useState<{ 
-    doctorSlotId: string; 
+  const [selectedSlot, setSelectedSlot] = useState<{
+    doctorSlotId: string;
     timeSlotId: string;
     startTime: string;
     endTime: string;
@@ -38,18 +43,19 @@ export default function PatientBookSlotPage() {
 
   const handleBook = () => {
     if (!selectedSlot) return;
-    
+
     const toastId = toast.loading("Processing your booking...");
-    
+
     bookSlotMutation.mutate(
-      { 
-        doctorSlotId: selectedSlot.doctorSlotId, 
-        timeSlotId: selectedSlot.timeSlotId 
+      {
+        doctorSlotId: selectedSlot.doctorSlotId,
+        timeSlotId: selectedSlot.timeSlotId,
       },
       {
         onSuccess: () => {
           toast.update(toastId, {
-            render: "Appointment booked successfully! We've notified the doctor.",
+            render:
+              "Appointment booked successfully! We've notified the doctor.",
             type: "success",
             isLoading: false,
             autoClose: 5000,
@@ -63,8 +69,8 @@ export default function PatientBookSlotPage() {
             isLoading: false,
             autoClose: 5000,
           });
-        }
-      }
+        },
+      },
     );
   };
 
@@ -94,7 +100,7 @@ export default function PatientBookSlotPage() {
             />
           </div>
         </div>
-        
+
         {selectedSlot && (
           <div className="flex animate-in fade-in slide-in-from-right-4 duration-300">
             <button
@@ -110,8 +116,12 @@ export default function PatientBookSlotPage() {
               ) : (
                 <>
                   <span className="flex flex-col items-start leading-none">
-                    <span className="text-xs opacity-80 font-medium">Confirm Booking</span>
-                    <span className="text-sm font-bold mt-1">{selectedSlot.startTime} - {selectedSlot.endTime}</span>
+                    <span className="text-xs opacity-80 font-medium">
+                      Confirm Booking
+                    </span>
+                    <span className="text-sm font-bold mt-1">
+                      {selectedSlot.startTime} - {selectedSlot.endTime}
+                    </span>
                   </span>
                   <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </>
@@ -128,7 +138,9 @@ export default function PatientBookSlotPage() {
             {doctor?.user?.name?.charAt(0) || "D"}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">Dr. {doctor?.user?.name}</h2>
+            <h2 className="text-xl font-bold text-foreground">
+              Dr. {doctor?.user?.name}
+            </h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm font-medium text-muted flex items-center gap-1">
                 <Stethoscope className="h-3.5 w-3.5" />
@@ -142,11 +154,15 @@ export default function PatientBookSlotPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="flex gap-4">
           <div className="px-4 py-2 rounded-xl bg-secondary/50 text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted">Consultation Fee</p>
-            <p className="text-lg font-bold text-foreground">₹{doctor?.consultationFee}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+              Consultation Fee
+            </p>
+            <p className="text-lg font-bold text-foreground">
+              ₹{doctor?.consultationFee}
+            </p>
           </div>
         </div>
       </div>
@@ -172,7 +188,7 @@ export default function PatientBookSlotPage() {
                   min={new Date().toISOString().split("T")[0]}
                 />
                 {date && (
-                  <button 
+                  <button
                     onClick={() => setDate("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase text-primary hover:underline"
                   >
@@ -186,28 +202,41 @@ export default function PatientBookSlotPage() {
               <div className="flex items-start gap-3">
                 <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs leading-relaxed text-muted">
-                  Booking is subject to availability. Please arrive 10 minutes before your scheduled time.
+                  Booking is subject to availability. Please arrive 10 minutes
+                  before your scheduled time.
                 </p>
               </div>
             </div>
 
             {selectedSlot && (
               <div className="animate-in zoom-in-95 duration-300 rounded-2xl bg-primary/5 p-5 border border-primary/20 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-primary">Booking Summary</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Booking Summary
+                </p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">Date</span>
                     <span className="font-bold text-foreground">
-                      {new Date(date).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {new Date(date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">Time Slot</span>
-                    <span className="font-bold text-foreground">{selectedSlot.startTime} - {selectedSlot.endTime}</span>
+                    <span className="font-bold text-foreground">
+                      {selectedSlot.startTime} - {selectedSlot.endTime}
+                    </span>
                   </div>
                   <div className="pt-2 mt-2 border-t border-primary/10 flex justify-between text-base">
-                    <span className="text-foreground font-medium">Amount Due</span>
-                    <span className="font-black text-primary">₹{doctor?.consultationFee}</span>
+                    <span className="text-foreground font-medium">
+                      Amount Due
+                    </span>
+                    <span className="font-black text-primary">
+                      ₹{doctor?.consultationFee}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -218,7 +247,9 @@ export default function PatientBookSlotPage() {
         {/* Right Column: Time Slots Grid */}
         <div className="lg:col-span-8">
           <div className="mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-muted">2. Choose Available Time</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-muted">
+              2. Choose Available Time
+            </h3>
           </div>
 
           {!selectedSlot && slots.length > 0 && (
@@ -232,7 +263,9 @@ export default function PatientBookSlotPage() {
 
           {error && (
             <div className="mb-6 rounded-2xl border border-danger/20 bg-danger/5 px-6 py-4 text-sm text-danger flex items-center gap-3">
-              <div className="h-4 w-4 rounded-full bg-danger flex items-center justify-center text-[10px] text-white font-bold">!</div>
+              <div className="h-4 w-4 rounded-full bg-danger flex items-center justify-center text-[10px] text-white font-bold">
+                !
+              </div>
               {getErrorMessage(error)}
             </div>
           )}
@@ -244,8 +277,12 @@ export default function PatientBookSlotPage() {
                   <div className="h-16 w-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
                   <Clock className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-primary" />
                 </div>
-                <p className="text-base font-bold text-foreground">Finding the best times...</p>
-                <p className="text-sm text-muted">Syncing with Dr. {doctor?.user?.name}'s schedule</p>
+                <p className="text-base font-bold text-foreground">
+                  Finding the best times...
+                </p>
+                <p className="text-sm text-muted">
+                  Syncing with Dr. {doctor?.user?.name}'s schedule
+                </p>
               </div>
             </div>
           ) : slots.length === 0 ? (
@@ -258,7 +295,6 @@ export default function PatientBookSlotPage() {
                   </div>
                 }
                 title="Fully Booked"
-                description={`Dr. ${doctor?.user?.name} has no available slots for ${new Date(date).toLocaleDateString("en-US", { month: 'long', day: 'numeric' })}.`}
                 action={
                   <button onClick={() => setDate("")} className="btn-secondary">
                     View All Dates
@@ -280,28 +316,40 @@ export default function PatientBookSlotPage() {
                             day: "numeric",
                           })}
                         </h3>
-                        <p className="text-sm text-muted mt-0.5">Choose from {slot.timeSlots.filter(t => t.status === "available").length} available sessions</p>
+                        <p className="text-sm text-muted mt-0.5">
+                          Choose from{" "}
+                          {
+                            slot.timeSlots.filter(
+                              (t) => t.status === "available",
+                            ).length
+                          }{" "}
+                          available sessions
+                        </p>
                       </div>
                       <div className="hidden sm:flex items-center gap-2 rounded-2xl bg-secondary px-4 py-2 text-[10px] font-black uppercase text-muted tracking-widest shadow-inner">
                         {slot.slotDuration} MINS
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                       {slot.timeSlots.map((ts: ITimeSlot) => {
                         const isAvailable = ts.status === "available";
                         const isSelected = selectedSlot?.timeSlotId === ts._id;
-                        
+
                         return (
                           <button
                             key={ts._id}
-                            disabled={!isAvailable || bookSlotMutation.isPending}
-                            onClick={() => setSelectedSlot({ 
-                              doctorSlotId: slot._id, 
-                              timeSlotId: ts._id!,
-                              startTime: ts.startTime,
-                              endTime: ts.endTime
-                            })}
+                            disabled={
+                              !isAvailable || bookSlotMutation.isPending
+                            }
+                            onClick={() =>
+                              setSelectedSlot({
+                                doctorSlotId: slot._id,
+                                timeSlotId: ts._id!,
+                                startTime: ts.startTime,
+                                endTime: ts.endTime,
+                              })
+                            }
                             className={`group relative flex flex-col items-center justify-center rounded-[1.25rem] border-2 py-5 px-3 transition-all duration-300
                               ${
                                 isSelected
@@ -312,13 +360,21 @@ export default function PatientBookSlotPage() {
                               }
                             `}
                           >
-                            <p className={`text-base font-black ${isSelected ? "text-white" : isAvailable ? "text-foreground" : "text-muted"}`}>
+                            <p
+                              className={`text-base font-black ${isSelected ? "text-white" : isAvailable ? "text-foreground" : "text-muted"}`}
+                            >
                               {ts.startTime}
                             </p>
-                            <p className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${isSelected ? "text-white/80" : isAvailable ? "text-success" : "text-muted"}`}>
-                              {isSelected ? "Selected" : isAvailable ? "Open" : "Booked"}
+                            <p
+                              className={`mt-1 text-[10px] font-bold uppercase tracking-widest ${isSelected ? "text-white/80" : isAvailable ? "text-success" : "text-muted"}`}
+                            >
+                              {isSelected
+                                ? "Selected"
+                                : isAvailable
+                                  ? "Open"
+                                  : "Booked"}
                             </p>
-                            
+
                             {isSelected && (
                               <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white text-primary shadow-lg ring-2 ring-primary animate-in zoom-in-50 duration-300">
                                 <ChevronRight className="h-4 w-4" />
@@ -338,4 +394,3 @@ export default function PatientBookSlotPage() {
     </div>
   );
 }
-
