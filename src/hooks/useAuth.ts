@@ -1,7 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
-import { login, register } from "../apis/auth.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { login, register, logout } from "../apis/auth.api";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import { useNavigate } from "react-router-dom";
 
 export const useLogin = () => {
   return useMutation({
@@ -24,6 +25,27 @@ export const useRegister = () => {
     onError: (error) => {
       const err = getErrorMessage(error);
       toast.error(err || "something went wrong");
+    },
+  });
+};
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      localStorage.clear();
+      queryClient.clear();
+      navigate("/login");
+      toast.success("Logged out successfully");
+    },
+    onError: (error) => {
+      localStorage.clear();
+      queryClient.clear();
+      navigate("/login");
+      console.error("Logout error:", error);
     },
   });
 };

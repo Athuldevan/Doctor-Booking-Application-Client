@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLogin } from "../../hooks/useAuth";
@@ -24,6 +24,7 @@ export default function LoginPage() {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginForm>({
     defaultValues: {
@@ -31,6 +32,16 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (role === "admin") {
+      setValue("email", "admin@gmail.com");
+      setValue("password", "123456");
+    } else {
+      setValue("email", "");
+      setValue("password", "");
+    }
+  }, [role, setValue]);
 
   const { mutate, isPending, error } = useLogin();
 
@@ -41,6 +52,8 @@ export default function LoginPage() {
       { ...data, role },
       {
         onSuccess: (res: any) => {
+          localStorage.setItem("user", JSON.stringify(res.data));
+          localStorage.setItem("role", role);
           toast.success(`Welcome back, ${res.data?.name || "User"}!`);
           if (role === "admin") navigate("/admin");
           else navigate("/patient/doctors");

@@ -14,8 +14,8 @@ import PatientLayout from "./components/layouts/PatientLayout";
 
 import EditDoctorPage from "./components/Doctors/EditDoctor";
 import EditSlotPage from "./components/admin/editSlot";
-
 import PatientAppointmentsPage from "./pages/patient/AppointmentsPage";
+import ProtectedRoute from "./components/custom/ProtectedRoute";
 
 export function AppRoutes() {
   return (
@@ -24,21 +24,27 @@ export function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="doctors" element={<DoctorsPage />} />
-        <Route path="appointments" element={<AppointmentsPage />} />
-        <Route path="doctors/add" element={<AddDoctorPage />} />
-        <Route path="appointments/create" element={<CreateSlotPage />} />
-        <Route path="appointments/:id/edit" element={<EditSlotPage />} />
-        <Route path="doctors/:id/edit" element={<EditDoctorPage />} />
+      {/* Admin Routes */}
+      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="doctors" element={<DoctorsPage />} />
+          <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="doctors/add" element={<AddDoctorPage />} />
+          <Route path="appointments/create" element={<CreateSlotPage />} />
+          <Route path="appointments/:id/edit" element={<EditSlotPage />} />
+          <Route path="doctors/:id/edit" element={<EditDoctorPage />} />
+        </Route>
       </Route>
 
-      <Route path="/patient" element={<PatientLayout />}>
-        <Route index element={<PatientDoctorsPage />} />
-        <Route path="doctors" element={<PatientDoctorsPage />} />
-        <Route path="doctors/:doctorId/book" element={<PatientBookSlotPage />} />
-        <Route path="appointments" element={<PatientAppointmentsPage />} />
+      {/* Patient Routes */}
+      <Route element={<ProtectedRoute allowedRoles={["patient"]} />}>
+        <Route path="/patient" element={<PatientLayout />}>
+          <Route index element={<PatientDoctorsPage />} />
+          <Route path="doctors" element={<PatientDoctorsPage />} />
+          <Route path="doctors/:doctorId/book" element={<PatientBookSlotPage />} />
+          <Route path="appointments" element={<PatientAppointmentsPage />} />
+        </Route>
       </Route>
     </Routes>
   );

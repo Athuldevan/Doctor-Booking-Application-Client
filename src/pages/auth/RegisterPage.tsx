@@ -64,17 +64,7 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <RenderField
-              label=""
-              name="role"
-              type="radio"
-              control={control}
-              errors={errors}
-              options={[
-                { value: "patient", label: "Patient" },
-                { value: "admin", label: "Admin" },
-              ]}
-            />
+
 
             <RenderField
               name="name"

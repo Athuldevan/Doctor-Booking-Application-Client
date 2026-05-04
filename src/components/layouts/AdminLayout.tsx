@@ -29,12 +29,14 @@ const sidebarLinks = [
   },
 ];
 
+import { useLogout } from "../../hooks/useAuth";
+
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
+  const { mutate: logoutMutate } = useLogout();
 
   const handleLogout = () => {
-    navigate("/login");
+    logoutMutate();
   };
 
   return (

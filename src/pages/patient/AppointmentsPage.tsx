@@ -33,22 +33,26 @@ const statusIcons: Record<string, any> = {
 export default function PatientAppointmentsPage() {
   const { data, isLoading, refetch } = useGetPatientAppointments();
   const cancelMutation = useCancelSlot();
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; slotId: string; timeSlotId: string } | null>(null);
 
   const appointments = useMemo(() => {
     const list = data?.data || [];
     return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [data]);
 
-  const handleCancel = async (slotId: string, timeSlotId: string) => {
-    if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
-    
+  const handleCancelClick = (slotId: string, timeSlotId: string) => {
+    setCancelModal({ isOpen: true, slotId, timeSlotId });
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelModal) return;
     try {
       await cancelMutation.mutateAsync({
-        doctorSlotId: slotId,
-        timeSlotId: timeSlotId,
+        doctorSlotId: cancelModal.slotId,
+        timeSlotId: cancelModal.timeSlotId,
       });
       toast.success("Appointment cancelled successfully");
+      setCancelModal(null);
       refetch();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -120,7 +124,7 @@ export default function PatientAppointmentsPage() {
                       <div className="flex items-center gap-2">
                         {ts.status === 'pending' || ts.status === 'confirmed' ? (
                           <button
-                            onClick={() => handleCancel(slot._id, ts._id)}
+                            onClick={() => handleCancelClick(slot._id, ts._id)}
                             disabled={cancelMutation.isPending}
                             className="rounded-xl px-4 py-2 text-xs font-bold text-danger transition hover:bg-danger/10"
                           >
@@ -137,6 +141,37 @@ export default function PatientAppointmentsPage() {
               })}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Cancellation Modal */}
+      {cancelModal?.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setCancelModal(null)} />
+          <div className="relative w-full max-w-sm rounded-[2rem] border border-border bg-surface p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-danger/10 text-danger">
+              <AlertCircle className="h-8 w-8" />
+            </div>
+            <h3 className="mb-2 text-center text-xl font-bold text-foreground">Cancel Appointment?</h3>
+            <p className="mb-8 text-center text-sm text-muted">
+              Are you sure you want to cancel this appointment? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCancelModal(null)}
+                className="flex-1 rounded-2xl border border-border py-3 text-sm font-bold text-foreground transition hover:bg-secondary"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={confirmCancel}
+                disabled={cancelMutation.isPending}
+                className="flex-1 rounded-2xl bg-danger py-3 text-sm font-bold text-white transition hover:bg-danger-hover disabled:opacity-50"
+              >
+                {cancelMutation.isPending ? "Cancelling..." : "Yes, Cancel"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
