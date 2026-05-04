@@ -6,7 +6,7 @@ import {
   CheckCircle,
   XCircle,
   Calendar,
-  Clock,
+
 } from "lucide-react";
 
 interface DoctorTableRowProps {

@@ -7,7 +7,7 @@ import {
   ChevronRight,
   Calendar,
   Clock,
-  User,
+
   Stethoscope,
   Phone,
   Mail,
@@ -63,10 +63,10 @@ export default function AdminAppointmentsPage() {
   // Client-side search by patient/doctor name
   const filtered = search
     ? appointments.filter(
-        (a) =>
-          a.patientName?.toLowerCase().includes(search.toLowerCase()) ||
-          a.doctorName?.toLowerCase().includes(search.toLowerCase()),
-      )
+      (a) =>
+        a.patientName?.toLowerCase().includes(search.toLowerCase()) ||
+        a.doctorName?.toLowerCase().includes(search.toLowerCase()),
+    )
     : appointments;
 
   const handleStatusChange = (apt: AdminAppointment, newStatus: string) => {
@@ -96,7 +96,6 @@ export default function AdminAppointmentsPage() {
         </button>
       </div>
 
-      {/* ── Filters ─────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
@@ -110,18 +109,16 @@ export default function AdminAppointmentsPage() {
           />
         </div>
 
-        {/* Status filter pills */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="flex items-center gap-1.5 text-xs text-muted font-medium">
             <Filter className="h-3.5 w-3.5" /> Filter:
           </span>
           <button
             onClick={() => { setStatusFilter(""); setPage(1); }}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
-              !statusFilter
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${!statusFilter
                 ? "bg-primary text-white"
                 : "bg-secondary text-muted hover:bg-secondary/80"
-            }`}
+              }`}
           >
             All
           </button>
@@ -129,11 +126,10 @@ export default function AdminAppointmentsPage() {
             <button
               key={s}
               onClick={() => { setStatusFilter(s); setPage(1); }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
-                statusFilter === s
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${statusFilter === s
                   ? "bg-primary text-white"
                   : "bg-secondary text-muted hover:bg-secondary/80"
-              }`}
+                }`}
             >
               {s}
             </button>
@@ -141,14 +137,12 @@ export default function AdminAppointmentsPage() {
         </div>
       </div>
 
-      {/* ── Error ────────────────────────────────────────────────────────── */}
       {error && (
         <div className="rounded-xl border border-danger/20 bg-danger/5 px-4 py-3 text-sm text-danger">
           {getErrorMessage(error)}
         </div>
       )}
 
-      {/* ── Loading ──────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -161,7 +155,6 @@ export default function AdminAppointmentsPage() {
         />
       ) : (
         <>
-          {/* ── Table ─────────────────────────────────────────────────── */}
           <div className="ui-card overflow-hidden">
             {/* Summary bar */}
             <div className="border-b border-border bg-secondary/20 px-6 py-3 flex items-center justify-between">
@@ -263,9 +256,8 @@ export default function AdminAppointmentsPage() {
                       <div className="relative">
                         <button
                           onClick={() => setOpenDropdown(openDropdown === dropId ? null : dropId)}
-                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${
-                            statusColors[apt.status]
-                          }`}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${statusColors[apt.status]
+                            }`}
                         >
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${statusDot[apt.status] ?? "bg-muted"}`}
@@ -281,11 +273,10 @@ export default function AdminAppointmentsPage() {
                                 key={opt}
                                 onClick={() => handleStatusChange(apt, opt)}
                                 disabled={updateStatus.isPending}
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-left text-xs capitalize transition hover:bg-secondary ${
-                                  apt.status === opt
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-left text-xs capitalize transition hover:bg-secondary ${apt.status === opt
                                     ? "font-bold text-primary"
                                     : "text-foreground"
-                                }`}
+                                  }`}
                               >
                                 <span
                                   className={`h-1.5 w-1.5 rounded-full ${statusDot[opt] ?? "bg-muted"}`}
@@ -337,11 +328,10 @@ export default function AdminAppointmentsPage() {
                 <button
                   key={p}
                   onClick={() => setPage(p)}
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition ${
-                    p === page
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition ${p === page
                       ? "bg-primary text-white"
                       : "border border-border bg-surface text-muted hover:bg-secondary"
-                  }`}
+                    }`}
                 >
                   {p}
                 </button>

@@ -2,11 +2,9 @@ import { useState, useMemo } from "react";
 import { 
   Calendar, 
   Clock, 
-  Stethoscope, 
   AlertCircle, 
   CheckCircle2, 
   XCircle,
-  MoreVertical,
   ChevronRight,
   Loader2
 } from "lucide-react";
@@ -54,7 +52,7 @@ export default function PatientAppointmentsPage() {
       toast.success("Appointment cancelled successfully");
       setCancelModal(null);
       refetch();
-    } catch (err) {
+    } catch (err: any) {
       toast.error(getErrorMessage(err));
     }
   };
@@ -84,7 +82,6 @@ export default function PatientAppointmentsPage() {
                 .filter((ts: any) => ["pending", "confirmed", "completed"].includes(ts.status))
                 .map((ts: any) => {
                 const StatusIcon = statusIcons[ts.status] || AlertCircle;
-                const isPast = new Date(slot.date) < new Date();
                 
                 return (
                   <div 

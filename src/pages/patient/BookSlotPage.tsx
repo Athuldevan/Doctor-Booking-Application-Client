@@ -5,9 +5,7 @@ import {
   Calendar, 
   Loader2, 
   ChevronRight, 
-  User, 
   Clock, 
-  MapPin, 
   Stethoscope,
   Info,
   XCircle

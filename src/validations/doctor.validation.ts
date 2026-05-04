@@ -9,6 +9,8 @@ export const doctorSchema = z.object({
   experience: z.number().min(1, "Experience is required"),
   consultationFee: z.number(),
   bio: z.string().optional(),
+  hospital: z.string().optional(),
+  city: z.string().optional(),
 });
 
 export type DoctorFormData = z.infer<typeof doctorSchema>;

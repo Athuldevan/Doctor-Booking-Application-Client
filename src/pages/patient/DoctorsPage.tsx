@@ -2,21 +2,16 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Stethoscope, 
-  Calendar, 
   Search, 
   Filter, 
-  MapPin, 
   Star, 
-  Clock, 
   ArrowRight,
   ChevronRight
 } from "lucide-react";
 import { useGetDoctors } from "../../hooks/useDoctor";
-import { useGetAllSlots } from "../../hooks/useSlot";
 import PageHeader from "../../components/custom/PageHeader";
 import EmptyState from "../../components/custom/EmptyState";
 import type { IDoctor } from "../doctor/types/doctor";
-import type { ISlot } from "../doctor/types/ISlot";
 
 export default function PatientDoctorsPage() {
   const navigate = useNavigate();
@@ -24,15 +19,12 @@ export default function PatientDoctorsPage() {
   const [selectedSpecialization, setSelectedSpecialization] = useState("All");
 
   const { data: doctorsData, isLoading: doctorsLoading } = useGetDoctors();
-  const { data: slotsData, isLoading: slotsLoading } = useGetAllSlots();
-
   const doctors = doctorsData?.data || doctorsData || [];
-  const allSlots: ISlot[] = slotsData?.data || slotsData || [];
 
   // Extract all unique specializations
-  const specializations = useMemo(() => {
+  const specializations = useMemo<string[]>(() => {
     const specs = new Set(doctors.map((d: IDoctor) => d.specialization));
-    return ["All", ...Array.from(specs)];
+    return ["All", ...Array.from(specs)] as string[];
   }, [doctors]);
 
   // Filter doctors based on search and specialization
@@ -45,49 +37,7 @@ export default function PatientDoctorsPage() {
     });
   }, [doctors, search, selectedSpecialization]);
 
-  // Pre-calculate slot statistics for each doctor
-  const doctorStats = useMemo(() => {
-    const stats: Record<string, { availableCount: number; nextDate: string; slots: ISlot[] }> = {};
-    
-    // Group slots by doctor
-    allSlots.forEach(slot => {
-      const docId = typeof slot.doctorId === 'object' ? slot.doctorId?._id : slot.doctorId;
-      if (!docId) return;
-      
-      if (!stats[docId]) {
-        stats[docId] = { availableCount: 0, nextDate: "N/A", slots: [] };
-      }
-      stats[docId].slots.push(slot);
-    });
 
-    // Calculate stats for each group
-    Object.keys(stats).forEach(id => {
-      const group = stats[id];
-      // Sort slots by date
-      group.slots.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      
-      // Filter for future slots and calculate count
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-
-      const futureSlots = group.slots.filter(s => {
-        const d = new Date(s.date);
-        d.setHours(23, 59, 59, 999);
-        return d >= now;
-      });
-
-      group.availableCount = futureSlots.reduce((acc, s) => 
-        acc + s.timeSlots.filter(ts => ts.status === "available").length, 0
-      );
-
-      const firstAvailable = futureSlots.find(s => s.timeSlots.some(ts => ts.status === "available"));
-      if (firstAvailable) {
-        group.nextDate = new Date(firstAvailable.date).toLocaleDateString("en-US", { month: 'short', day: 'numeric' });
-      }
-    });
-
-    return stats;
-  }, [allSlots]);
 
   if (doctorsLoading) {
     return (
@@ -135,15 +85,15 @@ export default function PatientDoctorsPage() {
         
         <div className="relative md:col-span-5 lg:col-span-4">
           <Filter className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
-          <select
-            value={selectedSpecialization}
-            onChange={(e) => setSelectedSpecialization(e.target.value)}
-            className="ui-input h-14 pl-12 appearance-none shadow-sm cursor-pointer"
-          >
-            {specializations.map(spec => (
-              <option key={spec} value={spec}>{spec}</option>
-            ))}
-          </select>
+            <select
+              value={selectedSpecialization}
+              onChange={(e) => setSelectedSpecialization(e.target.value)}
+              className="ui-input h-14 pl-12 appearance-none shadow-sm cursor-pointer"
+            >
+              {specializations.map((spec: string) => (
+                <option key={spec} value={spec}>{spec}</option>
+              ))}
+            </select>
           <ChevronRight className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-muted pointer-events-none" />
         </div>
       </div>
@@ -165,9 +115,6 @@ export default function PatientDoctorsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {filteredDoctors.map((doc: IDoctor) => {
-            const stats = doctorStats[doc._id] || { availableCount: 0, nextDate: "N/A", slots: [] };
-            const { availableCount, nextDate } = stats;
-
             return (
               <div 
                 key={doc._id} 
