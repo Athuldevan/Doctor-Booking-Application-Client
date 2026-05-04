@@ -22,7 +22,7 @@ export const updateDoctor = async ({ _id, ...data }: Partial<IDoctor>) => {
   return res.data;
 };
 
-export const deleteDoctor = async (query: Partial<IDoctor>) => {
-  const res = await axiosClient.delete("/doctors", { params: query });
+export const deleteDoctor = async ({ _id }: Partial<IDoctor>) => {
+  const res = await axiosClient.delete(`/doctors/${_id}`);
   return res.data;
 };
