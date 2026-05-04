@@ -22,7 +22,7 @@ export default function PatientBookSlotPage() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
 
-  const [date, setDate] = useState<string>(""); // Empty means all
+  const [date, setDate] = useState<string>(""); 
   const { data: doctor, isLoading: isDoctorLoading } = useGetDoctor(
     doctorId || "",
   );
@@ -130,8 +130,6 @@ export default function PatientBookSlotPage() {
           </div>
         )}
       </div>
-
-      {/* Doctor Brief Info Card */}
       <div className="ui-card p-6 border-l-4 border-l-primary flex flex-wrap gap-8 items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
@@ -168,7 +166,6 @@ export default function PatientBookSlotPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        {/* Left Column: Calendar & Selection Details */}
         <div className="lg:col-span-4 space-y-6">
           <div className="ui-card p-6 space-y-6 sticky top-6">
             <div>
