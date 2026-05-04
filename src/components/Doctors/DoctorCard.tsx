@@ -61,17 +61,14 @@ export default function DoctorCard({
               text={`${doctor.hospital}${doctor.city ? `, ${doctor.city}` : ""}`}
             />
           )}
-          <DoctorDetail
-            icon={<Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
-            text={`${doctor.rating || 0} (${doctor.totalReviews || 0} reviews)`}
-          />
+
         </div>
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-border bg-secondary/30 px-5 py-3">
         <p className="text-lg font-bold text-foreground">
-          ${doctor.consultationFee}
+          ₹{doctor.consultationFee}
           <span className="text-xs font-normal text-muted"> / visit</span>
         </p>
 

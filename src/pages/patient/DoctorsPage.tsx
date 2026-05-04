@@ -4,7 +4,6 @@ import {
   Stethoscope, 
   Search, 
   Filter, 
-  Star, 
   ArrowRight,
   ChevronRight
 } from "lucide-react";
@@ -57,17 +56,6 @@ export default function PatientDoctorsPage() {
           title="Find Your Specialist"
           description="Book an appointment with top-rated medical professionals"
         />
-        
-        {/* Quick Stats or Promo could go here */}
-        <div className="flex items-center gap-4 rounded-2xl bg-primary/5 p-4 border border-primary/10">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-            <Star className="h-5 w-5 fill-current" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-primary uppercase">Trusted by Patients</p>
-            <p className="text-sm font-bold text-foreground">Top 1% medical staff</p>
-          </div>
-        </div>
       </div>
 
       {/* Advanced Filters */}
@@ -137,9 +125,6 @@ export default function PatientDoctorsPage() {
                     </div>
                     <p className="text-sm font-medium text-primary/80 uppercase tracking-wider">{doc.specialization}</p>
                     <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-                      <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                      <span>4.9 (120 reviews)</span>
-                      <span className="text-border">•</span>
                       <span>{doc.experience} yrs exp</span>
                     </div>
                   </div>
@@ -157,11 +142,11 @@ export default function PatientDoctorsPage() {
                   </div>
 
                   <button
-                    onClick={() => navigate(`/patient/doctors/${doc._id}/book`)}
+                    onClick={() => navigate(`/patient/doctors/${doc._id}`)}
                     className="btn-primary group/btn w-full h-12 gap-2 rounded-2xl"
                   >
-                    <span>Book Appointment</span>
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                    <span>View Profile</span>
+                    <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                   </button>
                 </div>
               </div>

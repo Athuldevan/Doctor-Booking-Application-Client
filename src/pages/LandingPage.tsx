@@ -5,7 +5,6 @@ import {
   Calendar,
   Clock,
   Shield,
-  Star,
   Heart,
   Users,
   Phone,
@@ -47,10 +46,10 @@ const features = [
       "Access healthcare anytime. Browse doctors and book appointments around the clock.",
   },
   {
-    icon: Star,
-    title: "Patient Reviews",
+    icon: Users,
+    title: "Patient Feedback",
     description:
-      "Read genuine patient reviews and ratings to choose the best doctor for your needs.",
+      "Read genuine patient feedback to choose the best doctor for your needs.",
   },
   {
     icon: Heart,
@@ -277,16 +276,11 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
+                  <p className="text-sm font-semibold text-blue-400">
+                    Trusted Healthcare Partner
+                  </p>
                   <p className="text-sm text-gray-500">
-                    4.9/5 from 2,000+ reviews
+                    Join 50,000+ satisfied patients
                   </p>
                 </div>
               </div>
@@ -436,13 +430,10 @@ export default function LandingPage() {
                 key={t.name}
                 className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 transition-shadow duration-300 hover:shadow-xl hover:shadow-blue-500/5"
               >
-                <div className="mb-4 flex items-center gap-1">
-                  {[...Array(t.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
+                <div className="mb-4">
+                  <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
+                    Verified Experience
+                  </span>
                 </div>
                 <p className="mb-6 leading-relaxed text-gray-400">"{t.text}"</p>
                 <div className="flex items-center gap-3">

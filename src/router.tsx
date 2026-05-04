@@ -15,6 +15,7 @@ import PatientLayout from "./components/layouts/PatientLayout";
 import EditDoctorPage from "./components/Doctors/EditDoctor";
 import EditSlotPage from "./components/admin/editSlot";
 import PatientAppointmentsPage from "./pages/patient/AppointmentsPage";
+import PatientDoctorDetailsPage from "./pages/patient/DoctorDetailsPage";
 import ProtectedRoute from "./components/custom/ProtectedRoute";
 
 export function AppRoutes() {
@@ -42,6 +43,7 @@ export function AppRoutes() {
         <Route path="/patient" element={<PatientLayout />}>
           <Route index element={<PatientDoctorsPage />} />
           <Route path="doctors" element={<PatientDoctorsPage />} />
+          <Route path="doctors/:doctorId" element={<PatientDoctorDetailsPage />} />
           <Route path="doctors/:doctorId/book" element={<PatientBookSlotPage />} />
           <Route path="appointments" element={<PatientAppointmentsPage />} />
         </Route>

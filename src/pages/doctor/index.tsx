@@ -62,7 +62,7 @@ export default function DoctorsPage() {
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Specialization</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Experience</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Fee</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase text-muted">Status</th>
+
                 <th className="px-6 py-4 text-right text-xs font-semibold uppercase text-muted">Actions</th>
               </tr>
             </thead>
